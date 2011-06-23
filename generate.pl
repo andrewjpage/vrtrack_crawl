@@ -26,6 +26,7 @@ use strict;
 use warnings;
 use Getopt::Long;
 use VRTrackCrawl::ConfigSettings;
+use VRTrackCrawl::RefsIndex;
 
 my $ENVIRONMENT;
 
@@ -44,5 +45,4 @@ USAGE
 # initialise settings
 my %config_settings = %{VRTrackCrawl::ConfigSettings->new(environment => $ENVIRONMENT)->get_config_settings()};
 
-use VRTrackCrawl::RefsIndex;
 my $refs_index = VRTrackCrawl::RefsIndex->new( file_location => $config_settings{refs_index_file} );

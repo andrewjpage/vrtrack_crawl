@@ -22,7 +22,7 @@ sub new
     bless $self, ref($class) || $class;
     
     die "File location must be specified" unless defined $self->{file_location};
-    load_file();
+    $self->load_file();
  
     return $self;
 }
@@ -39,6 +39,7 @@ sub load_file
     my @single_row = ($assembly_id, $sequence_file);
     push( @{$self->{assembly_ids_to_sequence_files}}, @single_row );
   }
+  
   close(FILE);
 }
 
