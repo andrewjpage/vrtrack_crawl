@@ -5,7 +5,7 @@ ConfigSettings.pm   - Return configuration settings
 =head1 SYNOPSIS
 
 use VRTrackCrawl::ConfigSettings;
-my %config_settings = %{VRTrackCrawl::ConfigSettings->new(environment => 'test')->get_config_settings()};
+my %config_settings = %{VRTrackCrawl::ConfigSettings->new(environment => 'test')->settings()};
 
 =cut
 
@@ -13,24 +13,17 @@ package VRTrackCrawl::ConfigSettings;
 
 use strict;
 use warnings;
+use Moose;
 use File::Slurp;
 use YAML::XS;
 
-sub new
-{
-    my ($class,@args) = @_;
-    my $self = @args ? {@args} : {};
-    bless $self, ref($class) || $class;
-    
-    $self->{environment} = 'test' unless defined $self->{environment};
+has 'environment' => (is => 'rw', isa => 'Str', default => 'test');
+has 'settings' => ( is => 'rw', isa => 'HashRef', lazy_build => 1 );
 
-    return $self;
-}
-
-sub get_config_settings
+sub _build_settings 
 {
-  my( $self ) = @_;
-  my %config_settings = %{ Load( scalar read_file("config/".$self->{environment}."/config.yml"))};
+  my $self = shift;
+  my %config_settings = %{ Load( scalar read_file("config/".$self->environment."/config.yml"))};
 
   return \%config_settings;
 } 

@@ -43,6 +43,15 @@ USAGE
 ;
 
 # initialise settings
-my %config_settings = %{VRTrackCrawl::ConfigSettings->new(environment => $ENVIRONMENT)->get_config_settings()};
+my %config_settings = %{VRTrackCrawl::ConfigSettings->new(environment => $ENVIRONMENT)->settings()};
 
+# load the refs index file
 my $refs_index = VRTrackCrawl::RefsIndex->new( file_location => $config_settings{refs_index_file} );
+@assembly_ids_to_sequence_files = $refs_index->assembly_ids_to_sequence_files;
+
+# lookup assembly name in DB
+# Get to mapstats table and find BAM where ID of mapstats = BAM name
+# Find organism and reference genome
+# produce JSON file
+
+

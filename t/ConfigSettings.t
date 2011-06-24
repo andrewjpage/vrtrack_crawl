@@ -15,5 +15,5 @@ ok $config_settings = VRTrackCrawl::ConfigSettings->new(), 'initialization';
 is $config_settings->{environment}, 'test', 'test environment loaded by default';
 isa_ok $config_settings, 'VRTrackCrawl::ConfigSettings';
 
-ok my %settings = %{$config_settings->get_config_settings()}, 'settings hash';
+ok my %settings = %{$config_settings->settings}, 'settings hash';
 is $settings{refs_index_file}, 't/data/refs.index', 'refs index file location';
