@@ -6,14 +6,12 @@ JSONFile.pm   - Generate a JSON file in the format required by crawl
 
 use Crawl::JSONFile;
 my $json_file = Crawl::JSONFile->new(alignments => @alignments);
-$json_file.to_json();
+$json_file.render_to_json();
 
 =cut
 
 package Crawl::JSONFile;
 
-use strict;
-use warnings;
 use JSON;
 use Moose;
 
@@ -23,16 +21,19 @@ has 'output_structure' => ( is => 'rw', isa => 'HashRef',  lazy_build => 1 );
 sub _build_output_structure
 {
   my $self = shift;
-  %crawl_json_hash;
-  $crawl_json_hash(alignments => $self->alignments);
+  my %crawl_json_hash;
+  $crawl_json_hash{alignments} = $self->alignments;
   return \%crawl_json_hash;
 }
 
-sub to_json 
+sub render_to_json 
 {
   my $self = shift;
-  $json = JSON->new->allow_nonref;
-  $json_text = $json->encode( $self->output_structure );
+  my $json = JSON->new->allow_nonref;
+  $json = $json->allow_blessed([1]);
+  $json->get_allow_blessed;
+  $json = $json->convert_blessed([1]);
+  return $json->encode( $self->output_structure );
 }
 
- 
+1;

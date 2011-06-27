@@ -16,8 +16,6 @@ my $alignment = VRTrackCrawl::Alignment->new(
 
 package VRTrackCrawl::Alignment;
 
-use strict;
-use warnings;
 use Moose;
 
 has 'file'         => ( is => 'rw', isa => 'Str', required => 1 );
@@ -25,5 +23,17 @@ has 'index'        => ( is => 'rw', isa => 'Str' );
 has 'organism'     => ( is => 'rw', isa => 'Str', required => 1 );
 has 'qc_status'    => ( is => 'rw', isa => 'Str' );
 # add in more fields from BAM header and from mapstats table
+
+sub TO_JSON
+{
+  my $self = shift;
+  my %attributes_to_output = (
+      file => $self->file,
+      index => $self->index,
+      organism => $self->organism,
+      qc_status => $self->qc_status
+    );
+  return \%attributes_to_output;
+}
 
 1;

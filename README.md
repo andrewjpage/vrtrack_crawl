@@ -7,3 +7,5 @@ Dependancies
 ------------
 JSON::XS
 YAML::XS
+
+You will need a local database with the VRtracking test database schema.

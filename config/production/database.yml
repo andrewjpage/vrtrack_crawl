@@ -1,0 +1,34 @@
+pathogen_euk_track:
+  database: pathogen_euk_track
+  host:     web-mii-shap
+  port:     3303
+  user:     pathpipe_ro
+  password:
+
+pathogen_prok_track:
+  database: pathogen_prok_track
+  host:     web-mii-shap
+  port:     3303
+  user:     pathpipe_ro
+  password:
+
+pathogen_helminth_track:
+  database: pathogen_helminth_track
+  host:     web-mii-shap
+  port:     3303
+  user:     pathpipe_ro
+  password:
+
+pathogen_virus_track:
+  database: pathogen_virus_track
+  host:     web-mii-shap
+  port:     3303
+  user:     pathpipe_ro
+  password:
+
+pathogen_metahit_track:
+  database: pathogen_metahit_track
+  host:     web-mii-shap
+  port:     3303
+  user:     pathpipe_ro
+  password:
