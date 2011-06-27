@@ -34,18 +34,16 @@ sub _build_alignments
   
   for my $assembly_name_to_sequence_file (@assembly_names_to_sequence_files)
   {
-    my $assemblies = $self->_dbh->resultset('Assembly')->search({ name => { like => @{$assembly_name_to_sequence_file}[0] } });
+    my $assemblies = $self->_assemblies( @{$assembly_name_to_sequence_file}[0] );
     while( my $assembly = $assemblies->next )
     {
-      my $mapstats = $self->_dbh->resultset('MapStats')->search({ assembly_id => $assembly->assembly_id, latest => 1  });
-      
+      my $mapstats = $self->_map_stats_from_assembly($assembly->assembly_id);
       while( my $mapstat = $mapstats->next )
       {
-        # mapstats->lane->library->sample->individual->species->name
         # qc_status => $mapstat->qcstatus 
         my $alignment_object = VRTrackCrawl::Alignment->new(
           file => $self->_filename_from_mapstats_id($mapstat->mapstats_id),
-          organism => 'Plasmodium' 
+          organism => $self->_species_name_from_mapstats($mapstat->mapstats_id)
           );
         push(@alignment_objects, $alignment_object);
       }
@@ -60,15 +58,26 @@ sub _filename_from_mapstats_id
   return "http://localhost/".$mapstats_id.".bam";
 }
 
+sub _species_name_from_mapstats
+{
+  my $self = shift;
+  my $mapstats_id = shift;
+  
+  my $mapstats = $self->_dbh->resultset('MapStats')->search({ mapstats_id => $mapstats_id  });
+  #Todo make more robust
+  my $species = $mapstats->search_related('lane')->search_related('library')->search_related('sample')->search_related('individual')->search_related('species')->first; 
+  return $species->name;
+}
+
 sub _assemblies
 {
   my $self = shift;
   my $assembly_name = shift;
 
-  my @assemblies = $self->_dbh->resultset('Assembly')->search(
+  my $assemblies = $self->_dbh->resultset('Assembly')->search(
     { name => { like => $assembly_name } }
   );
-  return \@assemblies;
+  return $assemblies;
 }
 
 sub _map_stats_from_assembly
@@ -76,9 +85,10 @@ sub _map_stats_from_assembly
   my $self = shift;
   my $assembly_id = shift;
 
-  my @mapstats = $self->_dbh->resultset('MapStats')->search(
+  my $mapstats = $self->_dbh->resultset('MapStats')->search(
     { assembly_id => $assembly_id  }
-  )->all;
+  );
+  return $mapstats;
 }
 
 1;

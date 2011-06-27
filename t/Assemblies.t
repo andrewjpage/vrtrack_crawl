@@ -4,16 +4,22 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 5;
+    use Test::Most tests => 12;
     use DBICx::TestDatabase;
     use_ok('VRTrackCrawl::Assemblies');
 }
 
 my $dbh = DBICx::TestDatabase->new('VRTrackCrawl::Schema');
 
-my $vrt_assembly = $dbh->resultset('Assembly')->find_or_create({ name => 'abc', assembly_id => 999, reference_size => 123 });
-my $vrt_mapstats = $dbh->resultset('MapStats')->create({ mapstats_id => '111', assembly_id => 999, latest => 1, row_id => 1, lane_id => 2 });
-my $expected_alignment = VRTrackCrawl::Alignment->new(file  => 'http://localhost/111.bam', organism => 'Plasmodium');
+ok my $vrt_assembly   = $dbh->resultset('Assembly'  )->create({ assembly_id   => 10, name          => 'abc', reference_size => 123 }), 'create assembly';
+ok my $vrt_mapstats   = $dbh->resultset('MapStats'  )->create({ mapstats_id   => 1,  assembly_id   => 10,    row_id         => 1, lane_id => 2 }), 'create mapstats';
+ok my $vrt_lane       = $dbh->resultset('Lane'      )->create({ lane_id       => 2,  library_id    => 3,     row_id         => 1 }), 'create lane';
+ok my $vrt_library    = $dbh->resultset('Library'   )->create({ library_id    => 3,  sample_id     => 4,     row_id         => 1 }), 'create library';
+ok my $vrt_sample     = $dbh->resultset('Sample'    )->create({ sample_id     => 4,  individual_id => 5,     row_id         => 1 }), 'create sample';
+ok my $vrt_individual = $dbh->resultset('Individual')->create({ individual_id => 5,  species_id    => 6 }), 'create individual';
+ok my $vrt_species    = $dbh->resultset('Species'   )->create({ species_id    => 6,  name          => 'species_name' }), 'create species';
+
+my $expected_alignment = VRTrackCrawl::Alignment->new(file  => 'http://localhost/1.bam', organism => 'species_name');
 my @expected_array = ($expected_alignment);
 
 dies_ok{ my $assemblies = VRTrackCrawl::Assemblies->new();} 'should die if required fields not passed in';
