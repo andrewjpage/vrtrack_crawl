@@ -2,7 +2,6 @@
 
 MapStat.pm   - Represents a row in the VRtrack database and the assosiated data
 
-
 =head1 SYNOPSIS
 
 use VRTrackCrawl::MapStat;
@@ -12,7 +11,6 @@ $mapstat = VRTrackCrawl::MapStat->new(
     data_hierarchy => "genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane",
     mapstats_id    => 1
   );
-
 
 =cut
 
@@ -127,7 +125,8 @@ sub _lane
 sub _lane_result_set_id
 {
   my ($self) = @_;
-  $self->_dbh->resultset('MapStats')->search({ mapstats_id => $self->mapstats_id  })->search_related('lane');
+  # processed = 7 means that the lane has gotten to the point where a BAM has been generated
+  $self->_dbh->resultset('MapStats')->search({ mapstats_id => $self->mapstats_id  })->search_related('lane', { processed => 7 });
 }
 
 sub _library_result_set_id
