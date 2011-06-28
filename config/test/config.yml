@@ -1,1 +1,4 @@
 refs_index_file: "t/data/refs.index" 
+
+test:
+  base_directory: t/data/seq-pipelines

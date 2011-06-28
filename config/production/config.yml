@@ -1,1 +1,16 @@
-refs_index_file: "/lustre/scratch103/pathogen/pathpipe/refs" 
+refs_index_file: "/lustre/scratch103/pathogen/pathpipe/refs"
+
+eukaryotes:
+  base_directory: /lustre/scratch103/pathogen/pathpipe/eukaryotes/seq-pipelines
+
+helminths:
+  base_directory: /lustre/scratch103/pathogen/pathpipe/helminths/seq-pipelines
+
+metahit:
+  base_directory: /lustre/scratch103/pathogen/pathpipe/metahit/seq-pipelines
+
+prokaryotes:
+  base_directory: /lustre/scratch103/pathogen/pathpipe/prokaryotes/seq-pipelines
+
+viruses:
+  base_directory: /lustre/scratch103/pathogen/pathpipe/viruses/seq-pipelines

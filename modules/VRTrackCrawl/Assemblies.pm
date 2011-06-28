@@ -6,7 +6,10 @@ It returns an array of Alignment objects.
 =head1 SYNOPSIS
 
 use VRTrackCrawl::Assemblies;
-my $assemblies = VRTrackCrawl::Assemblies->new( database_connection => $dbh);
+my $assemblies = VRTrackCrawl::Assemblies->new( 
+    _dbh => $dbh, 
+    refs_index_file_location => 't/data/refs.index', 
+    alignments_base_directory => 'http://localhost');
 my $assemblies->alignments();
 
 =cut
@@ -16,20 +19,21 @@ use Moose;
 use VRTrackCrawl::Schema;
 use VRTrackCrawl::RefsIndex;
 use VRTrackCrawl::Alignment;
-use VRTrackCrawl::Schema::Result::Assembly;
-use VRTrackCrawl::Schema::Result::MapStats;
+use VRTrackCrawl::MapStat;
 
 
-has '_dbh'                     => ( is => 'rw',                    required   => 1 );
-has 'refs_index_file_location' => ( is => 'rw', isa => 'Str',      required   => 1 );
-has 'alignments'               => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
+has '_dbh'                      => ( is => 'rw',                    required   => 1 );
+has 'refs_index_file_location'  => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'data_hierarchy'            => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'alignments'                => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 
 sub _build_alignments
 {
   my $self = shift;
   my @alignment_objects;
   
-  my $refs_index = VRTrackCrawl::RefsIndex->new( file_location => 't/data/refs.index');
+  my $refs_index = VRTrackCrawl::RefsIndex->new( file_location => $self->refs_index_file_location);
   my @assembly_names_to_sequence_files = $refs_index->assembly_names_to_sequence_files;
   
   for my $assembly_name_to_sequence_file (@assembly_names_to_sequence_files)
@@ -40,33 +44,22 @@ sub _build_alignments
       my $mapstats = $self->_map_stats_from_assembly($assembly->assembly_id);
       while( my $mapstat = $mapstats->next )
       {
-        # qc_status => $mapstat->qcstatus 
+        my $mapstat_data = VRTrackCrawl::MapStat->new(
+            _dbh => $self->_dbh, 
+            alignments_base_directory => $self->alignments_base_directory, 
+            data_hierarchy => $self->data_hierarchy,
+            mapstats_id    => $mapstat->mapstats_id
+          );
+        
         my $alignment_object = VRTrackCrawl::Alignment->new(
-          file => $self->_filename_from_mapstats_id($mapstat->mapstats_id),
-          organism => $self->_species_name_from_mapstats($mapstat->mapstats_id)
+          file => $mapstat_data->filename,
+          organism => $assembly->name
           );
         push(@alignment_objects, $alignment_object);
       }
     }
   }
   return \@alignment_objects;
-}
-
-sub _filename_from_mapstats_id
-{
-  my ($self, $mapstats_id) = @_;
-  return "http://localhost/".$mapstats_id.".bam";
-}
-
-sub _species_name_from_mapstats
-{
-  my $self = shift;
-  my $mapstats_id = shift;
-  
-  my $mapstats = $self->_dbh->resultset('MapStats')->search({ mapstats_id => $mapstats_id  });
-  #Todo make more robust
-  my $species = $mapstats->search_related('lane')->search_related('library')->search_related('sample')->search_related('individual')->search_related('species')->first; 
-  return $species->name;
 }
 
 sub _assemblies
