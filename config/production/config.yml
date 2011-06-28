@@ -1,4 +1,4 @@
-refs_index_file: "/lustre/scratch103/pathogen/pathpipe/refs"
+refs_index_file: /lustre/scratch103/pathogen/pathpipe/refs.index
 
 eukaryotes:
   base_directory: /lustre/scratch103/pathogen/pathpipe/eukaryotes/seq-pipelines

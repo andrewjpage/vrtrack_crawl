@@ -1,2 +1,2 @@
-abc	/somedirectory/abc.fa
-efg	/somedirectory/efg.fa
+abc	t/data/refs/abc.fa
+efg	t/data/refs/efg.fa

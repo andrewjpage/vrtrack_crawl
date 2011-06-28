@@ -33,4 +33,15 @@ sub _build_assembly_names_to_sequence_files
   return \@ref_index_split ;
 }
 
+sub references
+{
+  my $self = shift;
+  my %references_to_output;
+  for my $reference (@{$self->assembly_names_to_sequence_files})
+  {
+    next unless -e @{$reference}[1];
+    $references_to_output{@{$reference}[0]} = @{$reference}[1];
+  }
+  return \%references_to_output;
+}
 1;

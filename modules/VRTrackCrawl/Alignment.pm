@@ -36,4 +36,10 @@ sub TO_JSON
   return \%attributes_to_output;
 }
 
+sub is_valid
+{
+  my $self = shift;
+  return 0 unless (-e $self->file)
+}
+
 1;

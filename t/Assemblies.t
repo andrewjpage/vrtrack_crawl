@@ -38,10 +38,9 @@ isa_ok $assemblies, 'VRTrackCrawl::Assemblies';
 
 is_deeply $assemblies->alignments, \@expected_array, 'alignment objects data match expected' ;
 
+my $refs_index = VRTrackCrawl::RefsIndex->new(file_location => 't/data/refs.index');
+ok my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments, references => $refs_index->references), 'initialization';
 
-ok my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments), 'initialization';
-
-# Todo filter out the nulls
-my $expected_json_string =  '{"alignments":[{"qc_status":null,"index":null,"file":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.bam","organism":"abc"}]}';
+my $expected_json_string =   '{"references":{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"},"alignments":[{"qc_status":null,"index":null,"file":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.bam","organism":"abc"}]}';
 ok my $output_json_string = $json_file->render_to_json();
 is $output_json_string, $expected_json_string, 'output json matches';

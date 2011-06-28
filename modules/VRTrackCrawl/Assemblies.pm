@@ -44,23 +44,34 @@ sub _build_alignments
       my $mapstats = $self->_map_stats_from_assembly($assembly->assembly_id);
       while( my $mapstat = $mapstats->next )
       {
-        my $mapstat_data = VRTrackCrawl::MapStat->new(
-            _dbh => $self->_dbh, 
-            alignments_base_directory => $self->alignments_base_directory, 
-            data_hierarchy => $self->data_hierarchy,
-            mapstats_id    => $mapstat->mapstats_id
-          );
-        
-        my $alignment_object = VRTrackCrawl::Alignment->new(
-          file => $mapstat_data->filename,
-          organism => $assembly->name
-          );
-        push(@alignment_objects, $alignment_object);
+        my $alignment = $self->_create_alignment($mapstat, $assembly);
+        push(@alignment_objects,$alignment) if defined $alignment ;
       }
     }
   }
   return \@alignment_objects;
 }
+
+sub _create_alignment
+{
+  my ($self, $mapstat, $assembly) = @_;
+  my $mapstat_data = VRTrackCrawl::MapStat->new(
+    _dbh => $self->_dbh, 
+    alignments_base_directory => $self->alignments_base_directory, 
+    data_hierarchy => $self->data_hierarchy,
+    mapstats_id    => $mapstat->mapstats_id
+  );
+   
+  my $alignment_object = VRTrackCrawl::Alignment->new(
+    file => $mapstat_data->filename,
+    organism => $assembly->name
+  );
+  
+  # Dont return anything if the alignment is invalid, e.g. bam file doesnt exist
+  return undef unless $alignment_object->is_valid();
+  return $alignment_object;
+}
+
 
 sub _assemblies
 {
