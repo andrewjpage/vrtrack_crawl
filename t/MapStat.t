@@ -5,7 +5,7 @@ use Data::Dumper;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 12;
+    use Test::Most tests => 18;
     use DBICx::TestDatabase;
     use VRTrackCrawl::Schema;
     use_ok('VRTrackCrawl::MapStat');
@@ -30,3 +30,30 @@ ok my $mapstat = VRTrackCrawl::MapStat->new(
     mapstats_id    => 1
   );
 is $mapstat->filename, 't/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.bam', 'filename constructed correctly';
+
+# Data hierarchy with new constant directory
+ok $mapstat = VRTrackCrawl::MapStat->new(
+    _dbh => $dbh, 
+    alignments_base_directory => 't/data/seq-pipelines', 
+    data_hierarchy => "NEWDIR:genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane",
+    mapstats_id    => 1
+  ),'Data hierarchy with new constant directory';
+is $mapstat->filename, 't/data/seq-pipelines/NEWDIR/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.bam', 'filename constructed correctly';
+
+# Data hierarchy with random reordering
+ok $mapstat = VRTrackCrawl::MapStat->new(
+    _dbh => $dbh, 
+    alignments_base_directory => 't/data/seq-pipelines', 
+    data_hierarchy => "TRACKING:lane:library:genus:projectssid:species-subspecies:technology:sample",
+    mapstats_id    => 1
+  ),'Data hierarchy with random reordering';
+is $mapstat->filename, 't/data/seq-pipelines/TRACKING/lane_name/library_name/Genus/8/Species-SubSpecies/SLX/sample_name/1.bam', 'filename constructed correctly';
+
+# where the mapstats is invalid
+ok my $invalid_mapstat = VRTrackCrawl::MapStat->new(
+    _dbh => $dbh, 
+    alignments_base_directory => 't/data/seq-pipelines', 
+    data_hierarchy => "genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane",
+    mapstats_id    => 99
+  ),'where the mapstats is invalid';
+is $invalid_mapstat->filename, '', 'filename should not be constructed';

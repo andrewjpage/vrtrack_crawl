@@ -5,7 +5,7 @@ use JSON;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 6;
+    use Test::Most tests => 8;
     use_ok('VRTrackCrawl::RefsIndex');
 }
 
@@ -22,3 +22,6 @@ is_deeply $refs_index->assembly_names_to_sequence_files, \@expected_array, 'read
 my $json = JSON->new->allow_nonref;
 is $json->encode($refs_index->references), '{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"}', 'references structure' ;
 
+# Where the reference file dont exist
+ok $refs_index = VRTrackCrawl::RefsIndex->new(file_location => 't/data/invalid_refs.index'), 'initialization';
+is $json->encode($refs_index->references), '{}', 'filter files which dont exist' ;

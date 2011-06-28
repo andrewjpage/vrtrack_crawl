@@ -7,8 +7,8 @@ MapStat.pm   - Represents a row in the VRtrack database and the assosiated data
 
 use VRTrackCrawl::MapStat;
 $mapstat = VRTrackCrawl::MapStat->new(
-    _dbh => $dbh, 
-    alignments_base_directory => 't/data/seq-pipelines', 
+    _dbh => $dbh,
+    alignments_base_directory => 't/data/seq-pipelines',
     data_hierarchy => "genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane",
     mapstats_id    => 1
   );
@@ -19,6 +19,7 @@ $mapstat = VRTrackCrawl::MapStat->new(
 package VRTrackCrawl::MapStat;
 use Moose;
 use VRTrackCrawl::Schema;
+use Pathogens::Exceptions;
 
 has '_dbh'                      => ( is => 'rw',                    required   => 1 );
 has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   => 1 );
@@ -29,10 +30,17 @@ has 'filename'                  => ( is => 'rw', isa => 'Str',      lazy_build =
 sub _build_filename
 {
   my ($self) = @_;
-  
+
   my @file_name_components;
   push(@file_name_components, $self->alignments_base_directory);
-  push(@file_name_components, @{$self->_populate_data_hierarchy});
+  eval {
+    push(@file_name_components, @{$self->_populate_data_hierarchy});
+    1;
+  } or do
+  {
+    return '';
+  };
+
   push(@file_name_components, ''.$self->mapstats_id.'.bam');
   join('/', @file_name_components);
 }
@@ -57,6 +65,7 @@ sub _populate_data_hierarchy
     {
       my $method_to_call = "_$directory";
       $method_to_call =~ s/-/_/g;
+
       push(@populated_hierarchy, $self->$method_to_call());
     }
   }
@@ -111,7 +120,7 @@ sub _lane
 ###### END Methods called from the data_hierarchy #######
 
 
-###### Result Sets ###### 
+###### Result Sets ######
 sub _lane_result_set_id
 {
   my ($self) = @_;
@@ -154,13 +163,13 @@ sub _species_result_set_id
   $self->_individual_result_set_id($self->mapstats_id)->search_related('species');
 }
 
-###### End Result Sets ###### 
+###### End Result Sets ######
 
 
 sub _species_name
 {
   my ($self) = @_;
-  $self->_species_result_set_id($self->mapstats_id)->first->name; 
+  $self->_species_result_set_id($self->mapstats_id)->first->name;
 }
 
 sub _split_species_name

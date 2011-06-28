@@ -1,4 +1,6 @@
 refs_index_file: "t/data/refs.index" 
+default_data_hierarchy: genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane
+output_json_file: t/data/alignments.json
 
 test:
   base_directory: t/data/seq-pipelines

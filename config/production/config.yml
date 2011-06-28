@@ -1,4 +1,6 @@
 refs_index_file: /lustre/scratch103/pathogen/pathpipe/refs.index
+default_data_hierarchy: genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane
+output_json_file: /lustre/scratch103/pathogen/pathpipe/alignments.json
 
 eukaryotes:
   base_directory: /lustre/scratch103/pathogen/pathpipe/eukaryotes/seq-pipelines

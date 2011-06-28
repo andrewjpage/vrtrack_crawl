@@ -1,7 +1,7 @@
 package Pathogens::Exceptions;
 
 use Exception::Class (
-    Pathogens::Exceptions::MissingParameterException => { description => 'Expected input parameter to the new method is missing' },
+    Pathogens::Exceptions::CantCreatePathToAlignmentFile => { description => 'Data thats needed to create the path to the alignment file is missing from the database' },
 );
 
 1;
