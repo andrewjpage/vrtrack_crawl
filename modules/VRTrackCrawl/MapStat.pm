@@ -83,7 +83,10 @@ sub _genus
 sub _species_subspecies
 {
   my ($self) = @_;
-  ''.@{$self->_split_species_name}[1].'-'.@{$self->_split_species_name}[2];
+  my @split_species = @{$self->_split_species_name};
+  # remove Genus
+  shift(@split_species);
+  join('-',@split_species);
 }
 
 sub _projectssid

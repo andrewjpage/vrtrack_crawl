@@ -34,7 +34,7 @@ sub _build_alignments
   my @alignment_objects;
   
   my $refs_index = VRTrackCrawl::RefsIndex->new( file_location => $self->refs_index_file_location);
-  my @assembly_names_to_sequence_files = $refs_index->assembly_names_to_sequence_files;
+  my @assembly_names_to_sequence_files = @{$refs_index->assembly_names_to_sequence_files};
   
   for my $assembly_name_to_sequence_file (@assembly_names_to_sequence_files)
   {

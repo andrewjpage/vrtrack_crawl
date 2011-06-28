@@ -66,7 +66,7 @@ my $assemblies = VRTrackCrawl::Assemblies->new(
 my $refs_index = VRTrackCrawl::RefsIndex->new(file_location => $config_settings{refs_index_file});
 my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments(), references => $refs_index->references);
 
-open (OUTPUT_FILE, "+>$config_settings{output_json_file}") or die "Couldnt open output file";
+open (OUTPUT_FILE, "+>$config_settings{$CATEGORY}{output_json_file}") or die "Couldnt open output file";
 print OUTPUT_FILE $json_file->render_to_json();
 print $json_file->render_to_json()."\n";
 close (OUTPUT_FILE);
