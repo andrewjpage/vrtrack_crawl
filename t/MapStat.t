@@ -5,7 +5,7 @@ use Data::Dumper;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 21;
+    use Test::Most tests => 24;
     use DBICx::TestDatabase;
     use VRTrackCrawl::Schema;
     use_ok('VRTrackCrawl::MapStat');
@@ -69,5 +69,13 @@ ok $mapstat = VRTrackCrawl::MapStat->new(
   );
 is $mapstat->filename, '', 'filename is empty where the lane has a processed value which is not 7, meaning it hasnt completed all stages and no bam is available';
 
-
+# check that the qc_status doesnt cause an error if the lanes not there
+ok $dbh->resultset('Lane'      )->update({ processed => 7, lane_id => 88 });
+ok $mapstat = VRTrackCrawl::MapStat->new(
+    _dbh => $dbh, 
+    alignments_base_directory => 't/data/seq-pipelines', 
+    data_hierarchy => "genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane",
+    mapstats_id    => 1
+  );
+is $mapstat->qc_status, '', 'check that the qc_status doesnt cause an error if the lanes not there';
 

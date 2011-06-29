@@ -29,7 +29,9 @@ has 'qc_status'                 => ( is => 'rw', isa => 'Str',      lazy_build =
 sub _build_qc_status
 {
   my ($self) = @_;
-  $self->_lane_result_set_id($self->mapstats_id)->first->qc_status;
+  my $lane = $self->_lane_result_set_id($self->mapstats_id)->first;
+  return $lane->qc_status if(defined $lane);
+  return '';
 }
 
 sub _build_filename
