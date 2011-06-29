@@ -24,6 +24,13 @@ has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   =
 has 'data_hierarchy'            => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'mapstats_id'               => ( is => 'rw', isa => 'Int',      required   => 1 );
 has 'filename'                  => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
+has 'qc_status'                 => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
+
+sub _build_qc_status
+{
+  my ($self) = @_;
+  $self->_lane_result_set_id($self->mapstats_id)->first->qc_status;
+}
 
 sub _build_filename
 {

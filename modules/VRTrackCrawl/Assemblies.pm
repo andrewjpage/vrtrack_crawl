@@ -64,7 +64,8 @@ sub _create_alignment
    
   my $alignment_object = VRTrackCrawl::Alignment->new(
     file => $mapstat_data->filename,
-    organism => $assembly->name
+    organism => $assembly->name,
+    qc_status => $mapstat_data->qc_status
   );
   
   # Dont return anything if the alignment is invalid, e.g. bam file doesnt exist
