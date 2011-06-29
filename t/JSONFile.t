@@ -29,6 +29,6 @@ my $refs_index = VRTrackCrawl::RefsIndex->new(file_location => 't/data/refs.inde
 ok my $json_file = Crawl::JSONFile->new(alignments => [$alignment1, $alignment2], references => $refs_index->references), 'initialization';
 isa_ok $json_file, 'Crawl::JSONFile';
 
-my $expected_json_string =  '{"references":{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"},"alignments":[{"qc_status":"pass","index":"http://localhost/123.bam.bai","file":"http://localhost/123.bam","organism":"Mouse"},{"qc_status":"fail","index":"http://localhost/456.bam.bai","file":"http://localhost/456.bam","organism":"Human"}]}';
+my $expected_json_string =  '{"references":[{"file":"t/data/refs/abc.fa","organism":"abc"},{"file":"t/data/refs/efg.fa","organism":"efg"}],"alignments":[{"qc_status":"pass","index":"http://localhost/123.bam.bai","file":"http://localhost/123.bam","organism":"Mouse"},{"qc_status":"fail","index":"http://localhost/456.bam.bai","file":"http://localhost/456.bam","organism":"Human"}]}';
 ok my $output_json_string = $json_file->render_to_json();
 is $output_json_string, $expected_json_string, 'output json matches';

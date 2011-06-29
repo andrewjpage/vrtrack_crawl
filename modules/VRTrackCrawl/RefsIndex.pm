@@ -36,12 +36,14 @@ sub _build_assembly_names_to_sequence_files
 sub references
 {
   my $self = shift;
-  my %references_to_output;
+  my @references_to_output;
   for my $reference (@{$self->assembly_names_to_sequence_files})
   {
     next unless -e @{$reference}[1];
-    $references_to_output{@{$reference}[0]} = @{$reference}[1];
+    my %reference_details = ( organism => @{$reference}[0], file => @{$reference}[1] );
+    
+    push(@references_to_output, \%reference_details);
   }
-  return \%references_to_output;
+  return \@references_to_output;
 }
 1;

@@ -41,6 +41,6 @@ is_deeply $assemblies->alignments, \@expected_array, 'alignment objects data mat
 my $refs_index = VRTrackCrawl::RefsIndex->new(file_location => 't/data/refs.index');
 ok my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments, references => $refs_index->references), 'initialization';
 
-my $expected_json_string =   '{"references":{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"},"alignments":[{"qc_status":"passed","index":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam.bai","file":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam","organism":"abc"}]}';
+my $expected_json_string =    '{"references":[{"file":"t/data/refs/abc.fa","organism":"abc"},{"file":"t/data/refs/efg.fa","organism":"efg"}],"alignments":[{"qc_status":"passed","index":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam.bai","file":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam","organism":"abc"}]}';
 ok my $output_json_string = $json_file->render_to_json();
 is $output_json_string, $expected_json_string, 'output json matches';

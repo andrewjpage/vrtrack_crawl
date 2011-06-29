@@ -16,7 +16,7 @@ use JSON;
 use Moose;
 
 has 'alignments'       => ( is => 'rw', isa => 'ArrayRef', required => 1 );
-has 'references'       => ( is => 'rw', isa => 'HashRef',  required => 1 );
+has 'references'       => ( is => 'rw', isa => 'ArrayRef',  required => 1 );
 has 'output_structure' => ( is => 'rw', isa => 'HashRef',  lazy_build => 1 );
 
 sub _build_output_structure
