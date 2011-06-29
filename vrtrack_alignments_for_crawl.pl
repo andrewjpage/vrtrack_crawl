@@ -68,7 +68,6 @@ my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments(), re
 
 open (OUTPUT_FILE, "+>$config_settings{$CATEGORY}{output_json_file}") or die "Couldnt open output file";
 print OUTPUT_FILE $json_file->render_to_json();
-print $json_file->render_to_json()."\n";
 close (OUTPUT_FILE);
 
-print "Saved file to $config_settings{output_json_file}\n";
+print "Saved file to $config_settings{$CATEGORY}{output_json_file}\n";
