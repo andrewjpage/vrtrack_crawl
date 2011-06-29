@@ -18,11 +18,17 @@ package VRTrackCrawl::Alignment;
 
 use Moose;
 
-has 'file'         => ( is => 'rw', isa => 'Str', required => 1 );
-has 'index'        => ( is => 'rw', isa => 'Str' );
-has 'organism'     => ( is => 'rw', isa => 'Str', required => 1 );
+has 'file'         => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'index'   => ( is => 'rw', isa => 'Str', lazy_build => 1 );
+has 'organism'     => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'qc_status'    => ( is => 'rw', isa => 'Str' );
 # add in more fields from BAM header and from mapstats table
+
+sub _build_index
+{
+  my $self = shift;
+  ''.$self->file.'.bai';
+}
 
 sub TO_JSON
 {

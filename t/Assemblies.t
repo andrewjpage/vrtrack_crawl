@@ -23,7 +23,7 @@ ok my $vrt_project    = $dbh->resultset('Project'   )->create({ project_id    =>
 ok my $vrt_seq_tech   = $dbh->resultset('SeqTech'   )->create({ seq_tech_id   => 9,  name           => 'SLX' }), 'create seq_tech';
 
 
-my $expected_alignment = VRTrackCrawl::Alignment->new(file  => 't/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.bam', organism => 'abc');
+my $expected_alignment = VRTrackCrawl::Alignment->new(file  => 't/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam', organism => 'abc');
 my @expected_array = ($expected_alignment);
 
 dies_ok{ my $assemblies = VRTrackCrawl::Assemblies->new();} 'should die if required fields not passed in';
@@ -41,6 +41,6 @@ is_deeply $assemblies->alignments, \@expected_array, 'alignment objects data mat
 my $refs_index = VRTrackCrawl::RefsIndex->new(file_location => 't/data/refs.index');
 ok my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments, references => $refs_index->references), 'initialization';
 
-my $expected_json_string =   '{"references":{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"},"alignments":[{"qc_status":null,"index":null,"file":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.bam","organism":"abc"}]}';
+my $expected_json_string =   '{"references":{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"},"alignments":[{"qc_status":null,"index":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam.bai","file":"t/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam","organism":"abc"}]}';
 ok my $output_json_string = $json_file->render_to_json();
 is $output_json_string, $expected_json_string, 'output json matches';

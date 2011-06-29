@@ -39,7 +39,7 @@ sub _build_filename
     return '';
   };
 
-  push(@file_name_components, ''.$self->mapstats_id.'.bam');
+  push(@file_name_components, ''.$self->mapstats_id.'.pe.raw.sorted.bam');
   join('/', @file_name_components);
 }
 
