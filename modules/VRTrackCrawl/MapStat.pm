@@ -17,7 +17,6 @@ $mapstat = VRTrackCrawl::MapStat->new(
 package VRTrackCrawl::MapStat;
 use Moose;
 use VRTrackCrawl::Schema;
-use Pathogens::Exceptions;
 
 has '_dbh'                      => ( is => 'rw',                    required   => 1 );
 has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   => 1 );
@@ -48,9 +47,24 @@ sub _build_filename
     return '';
   };
 
-  push(@file_name_components, ''.$self->mapstats_id.'.pe.raw.sorted.bam');
+  push(@file_name_components, ''.$self->mapstats_id.'.'.$self->_file_extension.'.raw.sorted.bam');
   join('/', @file_name_components);
 }
+
+sub _file_extension
+{
+  my ($self) = @_;
+  my $ended;
+  
+  $self->_is_paired ? 'pe' : 'se';
+}
+
+sub _is_paired
+{
+  my ($self) = @_;
+  $self->_lane_result_set_id($self->mapstats_id)->first->paired
+}
+
 
 sub _data_hierarchy_array
 {

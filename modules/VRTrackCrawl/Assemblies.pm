@@ -9,7 +9,8 @@ use VRTrackCrawl::Assemblies;
 my $assemblies = VRTrackCrawl::Assemblies->new( 
     _dbh => $dbh, 
     refs_index_file_location => 't/data/refs.index', 
-    alignments_base_directory => 'http://localhost');
+    alignments_base_directory => 'http://localhost',
+    taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_');
 my $assemblies->alignments();
 
 =cut
@@ -26,19 +27,24 @@ has '_dbh'                      => ( is => 'rw',                    required   =
 has 'refs_index_file_location'  => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'data_hierarchy'            => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'taxon_lookup_service'      => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'alignments'                => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
+
 
 sub _build_alignments
 {
   my $self = shift;
   my @alignment_objects;
   
-  my $refs_index = VRTrackCrawl::RefsIndex->new( file_location => $self->refs_index_file_location);
-  my @assembly_names_to_sequence_files = @{$refs_index->assembly_names_to_sequence_files};
+  my $refs_index = VRTrackCrawl::RefsIndex->new( 
+    file_location => $self->refs_index_file_location,
+    _dbh => $self-> _dbh,
+    taxon_lookup_service => $self->taxon_lookup_service
+    );
   
-  for my $assembly_name_to_sequence_file (@assembly_names_to_sequence_files)
+  for my $reference (@{$refs_index->references})
   {
-    my $assemblies = $self->_assemblies( @{$assembly_name_to_sequence_file}[0] );
+    my $assemblies = $self->_assemblies( $reference->organism );
     while( my $assembly = $assemblies->next )
     {
       my $mapstats = $self->_map_stats_from_assembly($assembly->assembly_id);
