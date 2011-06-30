@@ -28,6 +28,7 @@ has 'refs_index_file_location'  => ( is => 'rw', isa => 'Str',      required   =
 has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'data_hierarchy'            => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'taxon_lookup_service'      => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'taxon_name_search_service' => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'alignments'                => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 
 
@@ -39,7 +40,8 @@ sub _build_alignments
   my $refs_index = VRTrackCrawl::RefsIndex->new( 
     file_location => $self->refs_index_file_location,
     _dbh => $self-> _dbh,
-    taxon_lookup_service => $self->taxon_lookup_service
+    taxon_lookup_service => $self->taxon_lookup_service,
+    taxon_name_search_service => $self->taxon_name_search_service
     );
   
   for my $reference (@{$refs_index->references})

@@ -28,18 +28,20 @@ use VRTrackCrawl::Schema;
 use VRTrackCrawl::Exceptions;
 use LWP::UserAgent;
 use XML::TreePP;
+use URI::Escape;
 
 
-has '_dbh'                 => ( is => 'rw',               required   => 1 );
-has 'file'                 => ( is => 'rw', isa => 'Str', required   => 1 );
-has 'organism'             => ( is => 'rw', isa => 'Str', required   => 1 );
-has 'id'                   => ( is => 'rw', isa => 'Str', required   => 1 );
-has 'taxon_lookup_service' => ( is => 'rw', isa => 'Str', required   => 1 );
+has '_dbh'                      => ( is => 'rw',               required   => 1 );
+has 'file'                      => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'organism'                  => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'id'                        => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'taxon_lookup_service'      => ( is => 'rw', isa => 'Str', required   => 1 );
+has 'taxon_name_search_service' => ( is => 'rw', isa => 'Str', required   => 1 );
 
-has 'genus'                => ( is => 'rw', isa => 'Str', lazy_build => 1 );
-has 'species'              => ( is => 'rw', isa => 'Str', lazy_build => 1 );
-has 'translation_table'    => ( is => 'rw',               lazy_build => 1 );
-has 'taxon_id'             => ( is => 'rw', isa => 'Int', lazy_build => 1 );
+has 'genus'                     => ( is => 'rw', isa => 'Str',        lazy_build => 1 );
+has 'species'                   => ( is => 'rw', isa => 'Str',        lazy_build => 1 );
+has 'translation_table'         => ( is => 'rw', isa => 'Maybe[Int]', lazy_build => 1 );
+has 'taxon_id'                  => ( is => 'rw', isa => 'Maybe[Int]', lazy_build => 1 );
 
 sub _build_translation_table
 {
@@ -58,8 +60,17 @@ sub _build_translation_table
 sub _build_taxon_id
 {
   my $self = shift;
-  my $taxon_id = $self->_assembly_result_set->first->taxon_id;
-  $taxon_id;
+  my $assembly = $self->_assembly_result_set->first;
+  
+  unless(defined $assembly->taxon_id)
+  {  
+    my $taxon_id = $self->_lookup_taxon_id;
+    my $assembly = $self->_assembly_result_set->first;
+    $assembly->taxon_id($taxon_id);
+    $assembly->update;
+  }
+  
+  $assembly->taxon_id;
 }
 
 sub _build_genus
@@ -122,11 +133,7 @@ sub _remote_lookup_translation_table
   my ($self, $url) = @_;
   
   eval {
-    my $tpp = XML::TreePP->new();
-    my $ua = LWP::UserAgent->new();
-    $ua->timeout( 60 );
-    $ua->env_proxy;
-    $tpp->set( lwp_useragent => $ua );
+    my $tpp = $self->_setup_xml_parser_via_proxy;
     my $tree = $tpp->parsehttp( GET => $url );
     $tree = $tpp->parse($tree->{html}->{body}->{pre});
     $tree->{TaxaSet}->{Taxon}->{GeneticCode}->{GCId};
@@ -136,6 +143,59 @@ sub _remote_lookup_translation_table
   };
 }
 
+
+sub _lookup_taxon_id
+{
+  my $self = shift;
+  my @species_name = @{$self->_split_species_name};
+  pop(@species_name);
+  
+  my $taxon_id = $self->_local_lookup_taxon_id(''.$self->taxon_name_search_service.''.join('_',@species_name));
+  $taxon_id = $self->_remote_lookup_taxon_id($self->taxon_name_search_service, join(' ',@species_name)) unless(defined $taxon_id);
+  
+  (defined $taxon_id) ? $taxon_id : undef;
+}
+
+sub _local_lookup_taxon_id
+{
+  my ($self, $file) = @_;
+  return undef unless (-e $file);
+  
+  my $tpp = XML::TreePP->new();
+  my $tree = $tpp->parsefile( $file );
+  $tree->{eSearchResult}->{IdList}->{Id};
+}
+
+sub _remote_lookup_taxon_id
+{
+  my ($self, $url, $serach_term) = @_;
+  
+  eval {
+    my $tpp = $self->_setup_xml_parser_via_proxy;
+    my $tree = $tpp->parsehttp( GET => ''.$url.uri_escape($serach_term) );
+    $tree->{eSearchResult}->{IdList}->{Id};
+  } or do
+  {
+     VRTrackCrawl::Exceptions::TaxonLookupException->throw( error => "Cant get the taxon id for ".$self->_species_name );
+  };
+}
+
+
+
+
+
+
+sub _setup_xml_parser_via_proxy
+{
+  my ($self) = @_;
+  my $tpp = XML::TreePP->new();
+  my $ua = LWP::UserAgent->new();
+  $ua->timeout( 60 );
+  $ua->env_proxy;
+  $tpp->set( lwp_useragent => $ua );
+  $tpp;
+}
+  
 sub TO_JSON
 {
   my $self = shift;

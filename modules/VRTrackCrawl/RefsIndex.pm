@@ -20,10 +20,11 @@ package VRTrackCrawl::RefsIndex;
 use Moose;
 use VRTrackCrawl::Reference;
 
-has 'file_location'        => ( is => 'rw', isa => 'Str',      required   => 1 );
-has '_dbh'                 => ( is => 'rw',                    required   => 1 );
-has 'taxon_lookup_service' => ( is => 'rw', isa => 'Str',      required   => 1 );
-has 'references'           => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
+has 'file_location'             => ( is => 'rw', isa => 'Str',      required   => 1 );
+has '_dbh'                      => ( is => 'rw',                    required   => 1 );
+has 'taxon_lookup_service'      => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'taxon_name_search_service' => ( is => 'rw', isa => 'Str',      required   => 1 );
+has 'references'                => ( is => 'rw', isa => 'ArrayRef', lazy_build => 1 );
 
 sub _build_references
 {
@@ -39,6 +40,7 @@ sub _build_references
           file      => @{$reference_row}[1],
           organism  => @{$reference_row}[0],
           taxon_lookup_service => $self->taxon_lookup_service,
+          taxon_name_search_service => $self->taxon_name_search_service,
           id        => $id_count
         );
       if( $reference->is_valid() )

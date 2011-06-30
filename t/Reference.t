@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 12;
+    use Test::Most tests => 15;
     use DBICx::TestDatabase;
     use_ok('VRTrackCrawl::Reference');
 }
@@ -19,6 +19,7 @@ ok my $reference = VRTrackCrawl::Reference->new(
     file                 => 'http://localhost/123.bam',
     organism             => 'Homo_sapiens_123',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+    taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
     id                   => 1
   ), 'initialization';
 isa_ok $reference, 'VRTrackCrawl::Reference';
@@ -37,6 +38,7 @@ ok $reference = VRTrackCrawl::Reference->new(
     file                 => 'http://localhost/123.bam',
     organism             => 'Another_name_123',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+    taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
     id                   => 1
   ), 'initialization';
 dies_ok{ $reference->translation_table; };
@@ -50,6 +52,22 @@ ok $reference = VRTrackCrawl::Reference->new(
     file                 => 'http://localhost/123.bam',
     organism             => 'Some_other_name',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+    taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
     id                   => 1
   ), 'initialization';
 is $reference->translation_table, 99, 'dont lookup taxon webservice if translation already stored in db';
+
+
+# lookup the taxon id then lookup the translation_table
+$dbh->resultset('Assembly')->create({ assembly_id => 4, name => 'Homo_sapiens_123',  reference_size => 123 });
+
+ok $reference = VRTrackCrawl::Reference->new(
+    _dbh                 => $dbh,
+    file                 => 'http://localhost/123.bam',
+    organism             => 'Homo_sapiens_123',
+    taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+    taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
+    id                   => 1
+  ), 'lookup the taxon id then lookup the translation_table';
+is $reference->translation_table, 1, 'get translation table via service';
+is $reference->taxon_id, 9606, 'get taxon id via service';

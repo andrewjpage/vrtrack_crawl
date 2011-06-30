@@ -1,6 +1,7 @@
 refs_index_file: /lustre/scratch103/pathogen/pathpipe/refs/refs.index
 default_data_hierarchy: genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane
 taxon_lookup_service: http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&report=xml&id=
+taxon_name_search_service: http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=taxonomy&term=
 
 eukaryotes:
   base_directory: /lustre/scratch103/pathogen/pathpipe/eukaryotes/seq-pipelines

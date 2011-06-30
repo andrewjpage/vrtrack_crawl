@@ -62,11 +62,13 @@ my $assemblies = VRTrackCrawl::Assemblies->new(
     refs_index_file_location => $config_settings{refs_index_file}, 
     alignments_base_directory => $config_settings{$CATEGORY}{base_directory},
     data_hierarchy => $data_hierarchy,
-    taxon_lookup_service => $config_settings{taxon_lookup_service}
+    taxon_lookup_service => $config_settings{taxon_lookup_service},
+    taxon_name_search_service => $config_settings{taxon_name_search_service}
     );
 my $refs_index = VRTrackCrawl::RefsIndex->new(file_location => $config_settings{refs_index_file},
   _dbh => $dbh,
-  taxon_lookup_service => $config_settings{taxon_lookup_service});
+  taxon_lookup_service => $config_settings{taxon_lookup_service},
+  taxon_name_search_service => $config_settings{taxon_name_search_service} );
 my $json_file = Crawl::JSONFile->new(alignments => $assemblies->alignments(), references => $refs_index->references);
 
 open (OUTPUT_FILE, "+>$config_settings{$CATEGORY}{output_json_file}") or die "Couldnt open output file";
