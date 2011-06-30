@@ -11,7 +11,7 @@ BEGIN {
 }
 
 my $dbh = DBICx::TestDatabase->new('VRTrackCrawl::Schema');
-$dbh->resultset('Assembly')->create({ assembly_id => 2, name => 'efg',  reference_size => 123 , taxon_id => 9606 });
+$dbh->resultset('Assembly')->create({ assembly_id => 2, name => 'efg',  reference_size => 123 , taxon_id => 9606});
 ok my $vrt_assembly   = $dbh->resultset('Assembly'  )->create({ assembly_id   => 10, name           => 'abc',                     reference_size => 123, taxon_id => 9606 }), 'create assembly';
 ok my $vrt_mapstats   = $dbh->resultset('MapStats'  )->create({ mapstats_id   => 1,  assembly_id    => 10,                        row_id         => 1, lane_id => 2 }), 'create mapstats';
 ok my $vrt_lane       = $dbh->resultset('Lane'      )->create({ lane_id       => 2,  hierarchy_name => 'lane_name',               library_id     => 3,     row_id         => 1, processed => 7, qc_status => 'passed', paired => 1  }), 'create lane';

@@ -7,6 +7,7 @@ Dependancies
 ------------
 * JSON::XS
 * YAML::XS
+* XML::TreePP
 
 Installation
 ------------

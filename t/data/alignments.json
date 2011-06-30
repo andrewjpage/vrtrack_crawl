@@ -1,1 +1,1 @@
-{"references":{"abc":"t/data/refs/abc.fa","efg":"t/data/refs/efg.fa"},"alignments":[]}
+{"references":[{"file":"t/data/refs/abc.fa","organism":{"translation_table":"1","common_name":"abc","taxon_id":"9606","genus":"abc","species":"","id":0}},{"file":"t/data/refs/efg.fa","organism":{"translation_table":"11","common_name":"efg","taxon_id":"209645","genus":"efg","species":"","id":1}}],"alignments":[]}

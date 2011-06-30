@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 10;
+    use Test::Most tests => 12;
     use DBICx::TestDatabase;
     use_ok('VRTrackCrawl::Reference');
 }
@@ -40,3 +40,16 @@ ok $reference = VRTrackCrawl::Reference->new(
     id                   => 1
   ), 'initialization';
 dies_ok{ $reference->translation_table; };
+
+
+# translation table is already saved to the database so no need to look it up
+$dbh->resultset('Assembly')->create({ assembly_id => 3, name => 'Some_other_name',  reference_size => 123 , taxon_id => 9606, translation_table => 99 });
+
+ok $reference = VRTrackCrawl::Reference->new(
+    _dbh                 => $dbh,
+    file                 => 'http://localhost/123.bam',
+    organism             => 'Some_other_name',
+    taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+    id                   => 1
+  ), 'initialization';
+is $reference->translation_table, 99, 'dont lookup taxon webservice if translation already stored in db';

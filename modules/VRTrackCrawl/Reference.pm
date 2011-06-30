@@ -26,7 +26,8 @@ package VRTrackCrawl::Reference;
 use Moose;
 use VRTrackCrawl::Schema;
 use VRTrackCrawl::Exceptions;
-use XML::LibXML ;
+use LWP::UserAgent;
+use XML::TreePP;
 
 
 has '_dbh'                 => ( is => 'rw',               required   => 1 );
@@ -37,28 +38,28 @@ has 'taxon_lookup_service' => ( is => 'rw', isa => 'Str', required   => 1 );
 
 has 'genus'                => ( is => 'rw', isa => 'Str', lazy_build => 1 );
 has 'species'              => ( is => 'rw', isa => 'Str', lazy_build => 1 );
-has 'translation_table'    => ( is => 'rw', isa => 'Int', lazy_build => 1 );
+has 'translation_table'    => ( is => 'rw',               lazy_build => 1 );
 has 'taxon_id'             => ( is => 'rw', isa => 'Int', lazy_build => 1 );
-
-use Data::Dumper;
 
 sub _build_translation_table
 {
   my $self = shift;
-  my $parser = XML::LibXML->new();
-  eval {
-    my $dom = XML::LibXML->load_xml( location => ''.$self->taxon_lookup_service.''.$self->taxon_id );
-    $dom->findvalue('//Taxon/GeneticCode/GCId');
-  } or do
-  {
-     VRTrackCrawl::Exceptions::TaxonLookupException->throw( error => "Cant get the translation table for taxon ".$self->taxon_id );
-  };
+  my $translation_table = $self->_assembly_result_set->first->translation_table;
+  unless(defined $translation_table)
+  {  
+    $translation_table = $self->_lookup_translation_table;
+    my $assembly = $self->_assembly_result_set->first;
+    $assembly->translation_table($translation_table);
+    $assembly->update;
+  }
+  $translation_table;
 }
 
 sub _build_taxon_id
 {
   my $self = shift;
-  $self->_assembly_result_set->first->taxon_id;
+  my $taxon_id = $self->_assembly_result_set->first->taxon_id;
+  $taxon_id;
 }
 
 sub _build_genus
@@ -95,6 +96,46 @@ sub _split_species_name
   return \@split_species_name;
 }
 
+sub _lookup_translation_table
+{
+  my $self = shift;
+  my $taxon_service_url = ''.$self->taxon_lookup_service.''.$self->taxon_id ;
+  my $translation_table = $self->_local_lookup_translation_table($taxon_service_url);
+  
+  $translation_table = $self->_remote_lookup_translation_table($taxon_service_url) unless(defined $translation_table);
+  
+  (defined $translation_table) ? $translation_table : undef;
+}
+
+sub _local_lookup_translation_table
+{
+  my ($self, $file) = @_;
+  return undef unless (-e $file);
+  
+  my $tpp = XML::TreePP->new();
+  my $tree = $tpp->parsefile( $file );
+  $tree->{TaxaSet}->{Taxon}->{GeneticCode}->{GCId};
+}
+
+sub _remote_lookup_translation_table
+{
+  my ($self, $url) = @_;
+  
+  eval {
+    my $tpp = XML::TreePP->new();
+    my $ua = LWP::UserAgent->new();
+    $ua->timeout( 60 );
+    $ua->env_proxy;
+    $tpp->set( lwp_useragent => $ua );
+    my $tree = $tpp->parsehttp( GET => $url );
+    $tree = $tpp->parse($tree->{html}->{body}->{pre});
+    $tree->{TaxaSet}->{Taxon}->{GeneticCode}->{GCId};
+  } or do
+  {
+     VRTrackCrawl::Exceptions::TaxonLookupException->throw( error => "Cant get the translation table for taxon ".$self->taxon_id );
+  };
+}
+
 sub TO_JSON
 {
   my $self = shift;
@@ -117,7 +158,10 @@ sub TO_JSON
 sub is_valid
 {
   my $self = shift;
-  return 0 unless (-e $self->file)
+  return 0 unless(-e $self->file);
+  return 0 unless(defined $self->taxon_id);
+  
+  1;
 }
 
 

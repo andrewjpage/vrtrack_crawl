@@ -5,13 +5,13 @@ use JSON;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 8;
+    use Test::Most tests => 11;
     use DBICx::TestDatabase;
     use_ok('VRTrackCrawl::RefsIndex');
 }
 my $dbh = DBICx::TestDatabase->new('VRTrackCrawl::Schema');
-$dbh->resultset('Assembly')->create({ assembly_id => 1, name => 'abc',  reference_size => 123 , taxon_id => 9606 });
-$dbh->resultset('Assembly')->create({ assembly_id => 2, name => 'efg',  reference_size => 123 , taxon_id => 9606 });
+my $assembly = $dbh->resultset('Assembly')->create({ assembly_id => 1, name => 'abc',  reference_size => 123 , taxon_id => 9606 });
+$dbh->resultset('Assembly')->create({ assembly_id => 2, name => 'efg',  reference_size => 123 , taxon_id => 9606});
 
 dies_ok{ my $refs_index = VRTrackCrawl::RefsIndex->new();} 'should die if no file_location passed in';
 
@@ -40,3 +40,16 @@ ok $refs_index = VRTrackCrawl::RefsIndex->new(
   _dbh => $dbh,
   taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',), 'initialization';
 is $json->encode($refs_index->references), '[]', 'filter files which dont exist' ;
+
+
+# dont use the references if the taxon id doesnt exist
+$assembly->taxon_id(undef);
+$assembly->update;
+ok $refs_index = VRTrackCrawl::RefsIndex->new(
+  file_location => 't/data/refs.index',
+  _dbh => $dbh,
+  taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+), 'initialization';
+isa_ok $refs_index, 'VRTrackCrawl::RefsIndex';
+is $json->encode($refs_index->references),'[{"file":"t/data/refs/efg.fa","organism":{"translation_table":"1","common_name":"efg","taxon_id":"9606","genus":"efg","species":"","id":0}}]', 'dont use the references if the taxon id doesnt exist' ;
+
