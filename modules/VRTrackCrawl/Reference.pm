@@ -56,11 +56,12 @@ sub _build_gff_file
 sub _build_translation_table
 {
   my $self = shift;
-  my $translation_table = $self->_assembly_result_set->first->translation_table;
-  unless(defined $translation_table)
+  my $assembly = $self->_assembly_result_set->first;
+  my $translation_table = $assembly->translation_table;
+  
+  if( defined $assembly->taxon_id && ! defined $translation_table)
   {  
     $translation_table = $self->_lookup_translation_table;
-    my $assembly = $self->_assembly_result_set->first;
     $assembly->translation_table($translation_table);
     $assembly->update;
   }
@@ -75,7 +76,6 @@ sub _build_taxon_id
   unless(defined $assembly->taxon_id)
   {  
     my $taxon_id = $self->_lookup_taxon_id;
-    my $assembly = $self->_assembly_result_set->first;
     $assembly->taxon_id($taxon_id);
     $assembly->update;
   }
@@ -229,6 +229,7 @@ sub is_valid
 {
   my $self = shift;
   return 0 unless(-e $self->file);
+  return 0 unless(-e $self->gff_file);
   return 0 unless(defined $self->taxon_id);
   
   1;

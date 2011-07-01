@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 16;
+    use Test::Most tests => 19;
     use DBICx::TestDatabase;
     use_ok('VRTrackCrawl::Reference');
 }
@@ -16,7 +16,7 @@ $dbh->resultset('Assembly')->create({ assembly_id => 1, name => 'Homo_sapiens_12
 
 ok my $reference = VRTrackCrawl::Reference->new(
     _dbh                 => $dbh,
-    file                 => 'http://localhost/123.fa',
+    file                 => 't/data/refs/homo_sapiens_123.fa',
     organism             => 'Homo_sapiens_123',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
     taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
@@ -28,7 +28,7 @@ is $reference->genus, 'Homo', 'get genus';
 is $reference->species, 'sapiens_123', 'get species';
 is $reference->translation_table, 1, 'get translation table';
 is $reference->taxon_id, 9606, 'get taxon id';
-is $reference->gff_file, 'http://localhost/123.gff', 'get gff file';
+is $reference->gff_file, 't/data/refs/homo_sapiens_123.gff', 'get gff file';
 
 # Cant get taxon id 
 
@@ -72,3 +72,16 @@ ok $reference = VRTrackCrawl::Reference->new(
   ), 'lookup the taxon id then lookup the translation_table';
 is $reference->translation_table, 1, 'get translation table via service';
 is $reference->taxon_id, 9606, 'get taxon id via service';
+
+
+# fasta exists but gff doesnt exist
+ok $reference = VRTrackCrawl::Reference->new(
+    _dbh                 => $dbh,
+    file                 => 't/data/refs/homo_sapiens_789.fa',
+    organism             => 'Homo_sapiens_123',
+    taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
+    taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
+    id                   => 1
+  ), 'initialization';
+is $reference->gff_file, 't/data/refs/homo_sapiens_789.gff', 'get gff file';
+is $reference->is_valid, 0, 'fasta exists but gff doesnt exist so its invalid';
