@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 15;
+    use Test::Most tests => 16;
     use DBICx::TestDatabase;
     use_ok('VRTrackCrawl::Reference');
 }
@@ -16,7 +16,7 @@ $dbh->resultset('Assembly')->create({ assembly_id => 1, name => 'Homo_sapiens_12
 
 ok my $reference = VRTrackCrawl::Reference->new(
     _dbh                 => $dbh,
-    file                 => 'http://localhost/123.bam',
+    file                 => 'http://localhost/123.fa',
     organism             => 'Homo_sapiens_123',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
     taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
@@ -28,6 +28,7 @@ is $reference->genus, 'Homo', 'get genus';
 is $reference->species, 'sapiens_123', 'get species';
 is $reference->translation_table, 1, 'get translation table';
 is $reference->taxon_id, 9606, 'get taxon id';
+is $reference->gff_file, 'http://localhost/123.gff', 'get gff file';
 
 # Cant get taxon id 
 
@@ -35,7 +36,7 @@ $dbh->resultset('Assembly')->create({ assembly_id => 2, name => 'Another_name_12
 
 ok $reference = VRTrackCrawl::Reference->new(
     _dbh                 => $dbh,
-    file                 => 'http://localhost/123.bam',
+    file                 => 'http://localhost/123.fa',
     organism             => 'Another_name_123',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
     taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
@@ -49,7 +50,7 @@ $dbh->resultset('Assembly')->create({ assembly_id => 3, name => 'Some_other_name
 
 ok $reference = VRTrackCrawl::Reference->new(
     _dbh                 => $dbh,
-    file                 => 'http://localhost/123.bam',
+    file                 => 'http://localhost/123.fa',
     organism             => 'Some_other_name',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
     taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',
@@ -63,7 +64,7 @@ $dbh->resultset('Assembly')->create({ assembly_id => 4, name => 'Homo_sapiens_12
 
 ok $reference = VRTrackCrawl::Reference->new(
     _dbh                 => $dbh,
-    file                 => 'http://localhost/123.bam',
+    file                 => 'http://localhost/123.fa',
     organism             => 'Homo_sapiens_123',
     taxon_lookup_service => 't/data/homo_sapiens_ncbi_taxon_lookup_xml_page_',
     taxon_name_search_service => 't/data/homo_sapiens_ncbi_name_lookup_xml_page_',

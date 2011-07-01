@@ -38,10 +38,20 @@ has 'id'                        => ( is => 'rw', isa => 'Str', required   => 1 )
 has 'taxon_lookup_service'      => ( is => 'rw', isa => 'Str', required   => 1 );
 has 'taxon_name_search_service' => ( is => 'rw', isa => 'Str', required   => 1 );
 
+has 'gff_file'                  => ( is => 'rw', isa => 'Str',        lazy_build => 1 );
 has 'genus'                     => ( is => 'rw', isa => 'Str',        lazy_build => 1 );
 has 'species'                   => ( is => 'rw', isa => 'Str',        lazy_build => 1 );
 has 'translation_table'         => ( is => 'rw', isa => 'Maybe[Int]', lazy_build => 1 );
 has 'taxon_id'                  => ( is => 'rw', isa => 'Maybe[Int]', lazy_build => 1 );
+
+sub _build_gff_file
+{
+  my $self = shift;
+  my $gff_file = $self->file;
+  $gff_file =~ s!fa$!gff!;
+  $gff_file;
+}
+
 
 sub _build_translation_table
 {
@@ -201,7 +211,7 @@ sub TO_JSON
   my $self = shift;
   my %reference_data;
   
-  $reference_data{file} = $self->file;
+  $reference_data{file} = $self->gff_file;
   my %organism_data = ( 
     common_name       => $self->organism, 
     id                => $self->id,
