@@ -2,29 +2,29 @@ eukaryotes:
   database: pathogen_euk_track
   host:     web-mii-shap
   port:     3303
-  user:     pathpipe_ro
+  user:     pathpipe_rw
   #password: 
 
 prokaryotes:
   database: pathogen_prok_track
   host:     web-mii-shap
   port:     3303
-  user:     pathpipe_ro
+  user:     pathpipe_rw
 
 helminths:
   database: pathogen_helminth_track
   host:     web-mii-shap
   port:     3303
-  user:     pathpipe_ro
+  user:     pathpipe_rw
 
 viruses:
   database: pathogen_virus_track
   host:     web-mii-shap
   port:     3303
-  user:     pathpipe_ro
+  user:     pathpipe_rw
 
 metahit:
   database: pathogen_metahit_track
   host:     web-mii-shap
   port:     3303
-  user:     pathpipe_ro
+  user:     pathpipe_rw

@@ -1,1 +1,1 @@
-{"references":[{"file":"t/data/refs/homo_sapiens_123.fa","organism":{"translation_table":"1","common_name":"homo_sapiens_123","taxon_id":"9606","genus":"homo","species":"sapiens_123","id":0}},{"file":"t/data/refs/homo_sapiens_456.fa","organism":{"translation_table":"1","common_name":"homo_sapiens_456","taxon_id":"9606","genus":"homo","species":"sapiens_456","id":1}}],"alignments":[]}
+{"references":[],"alignments":[]}

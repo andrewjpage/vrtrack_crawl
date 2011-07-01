@@ -31,20 +31,23 @@ use Crawl::JSONFile;
 
 my $ENVIRONMENT;
 my $CATEGORY;
+my $DATABASE_PASSWORD;
 
 GetOptions ('environment|e=s'    => \$ENVIRONMENT,
-            'category|c=s'       => \$CATEGORY
+            'category|c=s'       => \$CATEGORY,
+            'database_password|p:s' => \$DATABASE_PASSWORD
 );
 
 $ENVIRONMENT or die <<USAGE;
 Usage: $0 [options]
 Create a JSON file for crawl.
 
-./vrtrack_alignments_for_crawl.pl -e (test|production) -c (eukaryotes|helminths|metahit|prokaryotes|viruses|test)
+./vrtrack_alignments_for_crawl.pl -e (test|production) -c (eukaryotes|helminths|metahit|prokaryotes|viruses|local_test) [-p my_password]
 
  Options:
      --environment       The configuration settings you wish to use ( test | production )
      --category          ( eukaryotes | helminths | metahit | prokaryotes | viruses | test )
+     --database_password [Optional] Used instead of the password setting in the database.yml file
 The environment variable DATA_HIERARCHY should be set (defaults to "genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane").
 
 USAGE
@@ -54,8 +57,9 @@ USAGE
 my %config_settings = %{VRTrackCrawl::ConfigSettings->new(environment => $ENVIRONMENT, filename => 'config.yml')->settings()};
 my %database_settings = %{VRTrackCrawl::ConfigSettings->new(environment => $ENVIRONMENT, filename => 'database.yml')->settings()};
 my $data_hierarchy = $ENV{'DATA_HIERARCHY'} || $config_settings{default_data_hierarchy};
+my $database_password = $DATABASE_PASSWORD || $database_settings{$CATEGORY}{password};
 
-my $dbh = VRTrackCrawl::Schema->connect("DBI:mysql:host=$database_settings{$CATEGORY}{host}:port=$database_settings{$CATEGORY}{port};database=$database_settings{$CATEGORY}{database}", $database_settings{$CATEGORY}{user}, $database_settings{$CATEGORY}{password}, {'RaiseError' => 1, 'PrintError'=>0});
+my $dbh = VRTrackCrawl::Schema->connect("DBI:mysql:host=$database_settings{$CATEGORY}{host}:port=$database_settings{$CATEGORY}{port};database=$database_settings{$CATEGORY}{database}", $database_settings{$CATEGORY}{user}, $database_password, {'RaiseError' => 1, 'PrintError'=>0});
 
 my $assemblies = VRTrackCrawl::Assemblies->new( 
     _dbh => $dbh, 

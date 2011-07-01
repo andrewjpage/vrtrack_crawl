@@ -168,11 +168,11 @@ sub _local_lookup_taxon_id
 
 sub _remote_lookup_taxon_id
 {
-  my ($self, $url, $serach_term) = @_;
+  my ($self, $url, $search_term) = @_;
   
   eval {
     my $tpp = $self->_setup_xml_parser_via_proxy;
-    my $tree = $tpp->parsehttp( GET => ''.$url.uri_escape($serach_term) );
+    my $tree = $tpp->parsehttp( GET => ''.$url.uri_escape($search_term) );
     $tree->{eSearchResult}->{IdList}->{Id};
   } or do
   {

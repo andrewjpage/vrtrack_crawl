@@ -25,7 +25,7 @@ Usage
 -----
 For testing: 
 
-		./vrtrack_alignments_for_crawl.pl -e test -c test
+		./vrtrack_alignments_for_crawl.pl -e test -c local_test
 		
 Requires a local VRTracking MySQL datdabase.
 		
