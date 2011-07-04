@@ -214,11 +214,11 @@ sub TO_JSON
   $reference_data{file} = $self->gff_file;
   my %organism_data = ( 
     common_name       => $self->organism, 
-    id                => $self->id,
+    ID                => $self->id,
     genus             => $self->genus,
     species           => $self->species,
     translation_table => $self->translation_table,
-    taxon_id          => $self->taxon_id 
+    taxonID           => $self->taxon_id 
   );
   $reference_data{organism} = \%organism_data;
 

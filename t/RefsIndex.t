@@ -33,7 +33,7 @@ $json = $json->allow_blessed([1]);
 $json->get_allow_blessed;
 $json = $json->convert_blessed([1]);
 
-is $json->encode($refs_index->references), '[{"file":"t/data/refs/homo_sapiens_123.gff","organism":{"translation_table":"1","common_name":"homo_sapiens_123","taxon_id":"9606","genus":"homo","species":"sapiens_123","id":0}},{"file":"t/data/refs/homo_sapiens_456.gff","organism":{"translation_table":"1","common_name":"homo_sapiens_456","taxon_id":"9606","genus":"homo","species":"sapiens_456","id":1}}]', 'references structure' ;
+is $json->encode($refs_index->references), '[{"file":"t/data/refs/homo_sapiens_123.gff","organism":{"translation_table":"1","ID":0,"common_name":"homo_sapiens_123","genus":"homo","taxonID":"9606","species":"sapiens_123"}},{"file":"t/data/refs/homo_sapiens_456.gff","organism":{"translation_table":"1","ID":1,"common_name":"homo_sapiens_456","genus":"homo","taxonID":"9606","species":"sapiens_456"}}]' ;
 
 # Where the reference file dont exist
 ok $refs_index = VRTrackCrawl::RefsIndex->new(
@@ -55,4 +55,4 @@ ok $refs_index = VRTrackCrawl::RefsIndex->new(
   taxon_name_search_service => 't/data/nonexistant_name_xml_page_',
 ), 'initialization';
 isa_ok $refs_index, 'VRTrackCrawl::RefsIndex';
-is $json->encode($refs_index->references),'[{"file":"t/data/refs/homo_sapiens_456.gff","organism":{"translation_table":"1","common_name":"homo_sapiens_456","taxon_id":"9606","genus":"homo","species":"sapiens_456","id":0}}]', 'dont use the references if the taxon id doesnt exist' ;
+is $json->encode($refs_index->references),'[{"file":"t/data/refs/homo_sapiens_456.gff","organism":{"translation_table":"1","ID":0,"common_name":"homo_sapiens_456","genus":"homo","taxonID":"9606","species":"sapiens_456"}}]', 'dont use the references if the taxon id doesnt exist' ;
