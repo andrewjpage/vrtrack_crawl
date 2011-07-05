@@ -6,32 +6,32 @@ local_test:
   
 eukaryotes:
   database: pathogen_euk_track_test
-  host:     web-mii-shap
-  port:     3303
+  host:     mcs6
+  port:     3346
   user:     pathpipe_rw
   #password: 
 
 prokaryotes:
   database: pathogen_prok_track_test
-  host:     web-mii-shap
-  port:     3303
+  host:     mcs6
+  port:     3346
   user:     pathpipe_rw
 
 helminths:
   database: pathogen_helminth_track_test
-  host:     web-mii-shap
-  port:     3303
+  host:     mcs6
+  port:     3346
   user:     pathpipe_rw
 
 viruses:
   database: pathogen_virus_track_test
-  host:     web-mii-shap
-  port:     3303
+  host:     mcs6
+  port:     3346
   user:     pathpipe_rw
 
 metahit:
   database: pathogen_metahit_track_test
-  host:     web-mii-shap
-  port:     3303
+  host:     mcs6
+  port:     3346
   user:     pathpipe_rw
 
