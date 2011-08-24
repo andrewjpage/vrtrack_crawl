@@ -4,7 +4,7 @@ use warnings;
 
 BEGIN { unshift(@INC, './modules') }
 BEGIN {
-    use Test::Most tests => 24;
+    use Test::Most tests => 27;
     use DBICx::TestDatabase;
     use VRTrackCrawl::Schema;
     use_ok('VRTrackCrawl::MapStat');
@@ -47,6 +47,19 @@ ok $mapstat = VRTrackCrawl::MapStat->new(
     mapstats_id    => 1
   ),'Data hierarchy with random reordering';
 is $mapstat->filename, 't/data/seq-pipelines/TRACKING/lane_name/library_name/Genus/8/Species-SubSpecies/SLX/sample_name/1.pe.raw.sorted.bam', 'filename constructed correctly';
+
+
+# lane has been stored
+ok $dbh->resultset('Lane'      )->update({ processed => 13 });
+ok $mapstat = VRTrackCrawl::MapStat->new(
+    _dbh => $dbh, 
+    alignments_base_directory => 't/data/seq-pipelines', 
+    data_hierarchy => "genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane",
+    mapstats_id    => 1
+  );
+is $mapstat->filename, 't/data/seq-pipelines/Genus/Species-SubSpecies/TRACKING/8/sample_name/SLX/library_name/lane_name/1.pe.raw.sorted.bam', 'filename constructed correctly';
+
+
 
 # where the mapstats is invalid
 ok my $invalid_mapstat = VRTrackCrawl::MapStat->new(

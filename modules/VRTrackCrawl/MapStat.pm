@@ -148,8 +148,13 @@ sub _lane
 sub _lane_result_set_id
 {
   my ($self) = @_;
-  # processed = 7 means that the lane has gotten to the point where a BAM has been generated
-  $self->_dbh->resultset('MapStats')->search({ mapstats_id => $self->mapstats_id  })->search_related('lane', { processed => 7 });
+  # we need mapping to have been done
+  # 0001 imported
+  # 0010 qc'd
+  # 0100 mapped
+  # 1000 stored
+  my @mapping_done = (5,7,13,15,29,31);
+  $self->_dbh->resultset('MapStats')->search({ mapstats_id => $self->mapstats_id  })->search_related('lane', { processed => \@mapping_done });
 }
 
 sub _library_result_set_id
