@@ -19,9 +19,9 @@ package VRTrackCrawl::Alignment;
 use Moose;
 
 has 'file'         => ( is => 'rw', isa => 'Str', required   => 1 );
-has 'index'   => ( is => 'rw', isa => 'Str', lazy_build => 1 );
+has 'index'        => ( is => 'rw', isa => 'Str', lazy_build => 1 );
 has 'organism'     => ( is => 'rw', isa => 'Str', required   => 1 );
-has 'qc_status'    => ( is => 'rw', isa => 'Str' );
+has 'qc_status'    => ( is => 'rw', isa => 'Maybe[Str]' );
 # add in more fields from BAM header and from mapstats table
 
 sub _build_index
@@ -45,7 +45,9 @@ sub TO_JSON
 sub is_valid
 {
   my $self = shift;
-  return 0 unless (-e $self->file)
+  return 0 unless(defined $self->qc_status);
+  return 0 unless(-e $self->file);
+  1;
 }
 
 1;
