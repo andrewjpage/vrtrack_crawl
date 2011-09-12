@@ -23,7 +23,7 @@ has 'alignments_base_directory' => ( is => 'rw', isa => 'Str',      required   =
 has 'data_hierarchy'            => ( is => 'rw', isa => 'Str',      required   => 1 );
 has 'mapstats_id'               => ( is => 'rw', isa => 'Int',      required   => 1 );
 has 'filename'                  => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
-has 'qc_status'                 => ( is => 'rw', isa => 'Str',      lazy_build => 1 );
+has 'qc_status'                 => ( is => 'rw', isa => 'Maybe[Str]',      lazy_build => 1 );
 
 sub _build_qc_status
 {
