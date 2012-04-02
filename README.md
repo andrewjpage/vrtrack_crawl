@@ -35,6 +35,6 @@ For production to generate prokaryotes:
 		
 File saved in:
 
-		 /lustre/scratch103/pathogen/pathpipe/prokaryotes/alignments.json
+		 /lustre/scratch108/pathogen/pathpipe/prokaryotes/alignments.json
 		
 In production you can also choose (eukaryotes|helminths|metahit|prokaryotes|viruses).

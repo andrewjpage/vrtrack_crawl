@@ -1,24 +1,24 @@
-refs_index_file: /lustre/scratch103/pathogen/pathpipe/refs/refs.index
+refs_index_file: /lustre/scratch108/pathogen/pathpipe/refs/refs.index
 default_data_hierarchy: genus:species-subspecies:TRACKING:projectssid:sample:technology:library:lane
 taxon_lookup_service: http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=taxonomy&report=xml&id=
 taxon_name_search_service: http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=taxonomy&term=
 
 eukaryotes:
-  base_directory: /lustre/scratch103/pathogen/pathpipe/eukaryotes/seq-pipelines
-  output_json_file: /lustre/scratch103/pathogen/pathpipe/eukaryotes/alignments.json
+  base_directory: /lustre/scratch108/pathogen/pathpipe/eukaryotes/seq-pipelines
+  output_json_file: /lustre/scratch108/pathogen/pathpipe/eukaryotes/alignments.json
 
 helminths:
-  base_directory: /lustre/scratch103/pathogen/pathpipe/helminths/seq-pipelines
-  output_json_file: /lustre/scratch103/pathogen/pathpipe/helminths/alignments.json
+  base_directory: /lustre/scratch108/pathogen/pathpipe/helminths/seq-pipelines
+  output_json_file: /lustre/scratch108/pathogen/pathpipe/helminths/alignments.json
 
 metahit:
-  base_directory: /lustre/scratch103/pathogen/pathpipe/metahit/seq-pipelines
-  output_json_file: /lustre/scratch103/pathogen/pathpipe/metahit/alignments.json
+  base_directory: /lustre/scratch108/pathogen/pathpipe/metahit/seq-pipelines
+  output_json_file: /lustre/scratch108/pathogen/pathpipe/metahit/alignments.json
 
 prokaryotes:
-  base_directory: /lustre/scratch103/pathogen/pathpipe/prokaryotes/seq-pipelines
-  output_json_file: /lustre/scratch103/pathogen/pathpipe/prokaryotes/alignments.json
+  base_directory: /lustre/scratch108/pathogen/pathpipe/prokaryotes/seq-pipelines
+  output_json_file: /lustre/scratch108/pathogen/pathpipe/prokaryotes/alignments.json
 
 viruses:
-  base_directory: /lustre/scratch103/pathogen/pathpipe/viruses/seq-pipelines
-  output_json_file: /lustre/scratch103/pathogen/pathpipe/viruses/alignments.json
+  base_directory: /lustre/scratch108/pathogen/pathpipe/viruses/seq-pipelines
+  output_json_file: /lustre/scratch108/pathogen/pathpipe/viruses/alignments.json
